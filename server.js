@@ -117,6 +117,7 @@ app.get("/", function(request, response) {
     response.sendFile(__dirname + "/views/index.html")
 })
 
+console.log(process.env.PORT)
 createServer(app).listen(process.env.PORT || 3000, () =>
     console.log("Example app listening on port 3000!")
 )
