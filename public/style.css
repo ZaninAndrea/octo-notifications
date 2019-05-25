@@ -1,71 +1,53 @@
-/* styles */
-/* called by your view template */
-
-* {
-  box-sizing: border-box;
-}
-
 body {
-  font-family: "Benton Sans", "Helvetica Neue", helvetica, arial, sans-serif;
-  margin: 2em;
+    font-family: "Benton Sans", "Helvetica Neue", helvetica, arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    display: flex;
 }
 
-h1 {
-  font-style: italic;
-  color: #373fff;
+#content {
+    min-width: 230px;
+    margin: auto;
+    text-align: center;
 }
 
-.bold {
-  font-weight: bold;
+#title {
+    font-family: proxima-nova, "Proxima Nova", sans-serif;
+    font-size: 6rem;
+    font-weight: 300;
+    color: #23272b;
+    margin: 0;
+}
+#subtitle {
+    font-family: proxima-nova, "Proxima Nova", sans-serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: #23272b;
+}
+#login {
+    color: white !important;
+    background: #23272b;
+    font-family: proxima-nova, "Proxima Nova", sans-serif;
+    font-size: 2rem;
+    color: #4d4d4d;
+    padding: 1rem;
+    text-decoration: none !important;
+    border-radius: 1rem;
+    fill: white;
 }
 
-p {
-  max-width: 600px;
+.octicon {
+    vertical-align: middle;
+    margin-bottom: 3px;
+    height: 3rem;
+    width: 3rem;
 }
 
-form {
-  margin-bottom: 25px;
-  padding: 15px;
-  background-color: cyan;
-  display: inline-block;
-  width: 100%;
-  max-width: 340px;
-  border-radius: 3px;
-}
-
-input {
-  display: block;
-  margin-bottom: 10px;
-  padding: 5px;
-  width: 100%;
-  border: 1px solid lightgrey;
-  border-radius: 3px;
-  font-size: 16px;
-}
-
-button {
-  font-size: 16px;
-  border-radius: 3px;
-  background-color: lightgrey;
-  border: 1px solid grey;
-  box-shadow: 2px 2px teal;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: yellow;
-}
-
-button:active {
-  box-shadow: none;
-}
-
-li {
-  margin-bottom: 5px;
-}
-
-footer {
-  margin-top: 50px;
-  padding-top: 25px;
-  border-top: 1px solid lightgrey;
+#subscribed {
+    font-family: proxima-nova, "Proxima Nova", sans-serif;
+    font-size: 4rem;
+    font-weight: 300;
+    color: #23272b;
+    margin: 0;
 }

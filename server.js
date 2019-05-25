@@ -131,13 +131,16 @@ async function main() {
             })
         }
 
-        res.redirect("/?userId=" + userId)
+        res.redirect("/subscribe?userId=" + userId)
     })
 
     app.use(express.static("public"))
 
     app.get("/", function(req, res) {
         res.sendFile(__dirname + "/views/index.html")
+    })
+    app.get("/subscribe", function(req, res) {
+        res.sendFile(__dirname + "/views/subscribe.html")
     })
 
     const port = process.env.PORT || 3000
