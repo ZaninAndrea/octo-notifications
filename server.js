@@ -6,128 +6,146 @@ const http = require("http")
 const fetch = require("isomorphic-fetch")
 const btoa = require("btoa")
 const moment = require("moment")
+const Client = require("./mongo")
 
-const { createServer } = http
+async function main() {
+    const { AccessToken } = await Client
 
-const vapidKeys = {
-    subject: "mailto:hello@github-notifications.glitch.me",
-    publicKey:
-        "BGxFCMN557K54skPUp-JLqbMfbc5u_3uyB8Zx4-VgGN4c4XqixyQ1Pbh5lSfosXIMSo9V3OvQlWdKj1WlSF8W14",
-    privateKey: "6zA_8iUrNvO8mXHoSXnjXf1xPOzLOMznK_b8JvY6acY",
-}
+    const { createServer } = http
 
-webpush.setVapidDetails(
-    vapidKeys.subject,
-    vapidKeys.publicKey,
-    vapidKeys.privateKey
-)
+    const vapidKeys = {
+        subject: "mailto:hello@github-notifications.glitch.me",
+        publicKey:
+            "BGxFCMN557K54skPUp-JLqbMfbc5u_3uyB8Zx4-VgGN4c4XqixyQ1Pbh5lSfosXIMSo9V3OvQlWdKj1WlSF8W14",
+        privateKey: "6zA_8iUrNvO8mXHoSXnjXf1xPOzLOMznK_b8JvY6acY",
+    }
 
-const app = express()
-app.use(cors())
-app.use(bodyParser.json())
+    webpush.setVapidDetails(
+        vapidKeys.subject,
+        vapidKeys.publicKey,
+        vapidKeys.privateKey
+    )
 
-const accessTokens = []
+    const app = express()
+    app.use(cors())
+    app.use(bodyParser.json())
+    const fetchNotifications = async () => {
+        const accessTokens = await AccessToken.findAll({})
 
-const fetchNotifications = () =>
-    accessTokens.map(accessToken =>
-        fetch(
-            "https://api.github.com/notifications?since=" +
-                moment()
-                    .subtract(1, "minutes")
-                    .toISOString(),
-            {
-                method: "GET",
-                headers: {
-                    Authorization: "Bearer " + accessToken.token,
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-            }
-        )
-            .then(res => res.json())
-            .then(res => {
-                for (let notification of res) {
-                    if (notification.unread) {
-                        let content = notification.subject.title
-
-                        accessToken.subscriptions.map(
-                            notificationSubscription =>
-                                webpush.sendNotification(
-                                    notificationSubscription,
-                                    JSON.stringify({
-                                        content,
-                                        url: notification.subject.url,
-                                        date: notification.updated_at,
-                                    })
-                                )
-                        )
-                    }
+        accessTokens.map(accessToken =>
+            fetch(
+                "https://api.github.com/notifications?since=" +
+                    moment()
+                        .subtract(1, "minutes")
+                        .toISOString(),
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: "Bearer " + accessToken.token,
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
                 }
-            })
-    )
+            )
+                .then(res => res.json())
+                .then(res => {
+                    for (let notification of res) {
+                        if (notification.unread) {
+                            let content = notification.subject.title
 
-app.post("/webPushSubscribe", (req, res) => {
-    const notificationSubscription = req.body
-    const accessTokenFound = accessTokens.find(
-        token => token.userId === req.query.userId
-    )
-
-    if (accessTokenFound) {
-        const subscriptionFound = accessTokenFound.subscriptions.find(
-            sub => sub.endpoint === notificationSubscription.endpoint
+                            accessToken.subscriptions.map(
+                                notificationSubscription =>
+                                    webpush.sendNotification(
+                                        notificationSubscription,
+                                        JSON.stringify({
+                                            content,
+                                            url: notification.subject.url,
+                                            date: notification.updated_at,
+                                        })
+                                    )
+                            )
+                        }
+                    }
+                })
         )
+    }
 
-        if (!subscriptionFound) {
-            accessTokenFound.subscriptions.push(notificationSubscription)
+    app.post("/webPushSubscribe", async (req, res) => {
+        const notificationSubscription = req.body
+        const accessTokenFound = await AccessToken.find({
+            userId: req.query.userId,
+        })
+
+        if (accessTokenFound) {
+            const subscriptionFound = accessTokenFound.subscriptions.find(
+                sub => sub.endpoint === notificationSubscription.endpoint
+            )
+
+            if (!subscriptionFound) {
+                await AccessToken.updateOne(
+                    { userId: req.query.userId },
+                    {
+                        $push: {
+                            subscriptions: notificationSubscription,
+                        },
+                    }
+                )
+            }
+
+            fetchNotifications()
         }
 
-        fetchNotifications()
-    }
-
-    res.send("ok")
-})
-
-app.get("/github-callback", async (req, res) => {
-    const result = await fetch(
-        `https://github.com/login/oauth/access_token?client_id=${
-            process.env.CLIENT_ID
-        }&client_secret=${process.env.CLIENT_SECRET}&code=${req.query.code}`,
-        { headers: { Accept: "application/json" } }
-    ).then(res => res.json())
-
-    const userId = await fetch("https://api.github.com/user", {
-        method: "GET",
-        headers: {
-            Authorization: "Bearer " + result.access_token,
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
+        res.send("ok")
     })
-        .then(res => res.json())
-        .then(res => res.id)
 
-    const tokenFound = accessTokens.find(
-        accessToken => accessToken.userId === userId
+    app.get("/github-callback", async (req, res) => {
+        const result = await fetch(
+            `https://github.com/login/oauth/access_token?client_id=${
+                process.env.CLIENT_ID
+            }&client_secret=${process.env.CLIENT_SECRET}&code=${
+                req.query.code
+            }`,
+            {
+                headers: {
+                    Accept: "application/json",
+                },
+            }
+        ).then(res => res.json())
+
+        const userId = await fetch("https://api.github.com/user", {
+            method: "GET",
+            headers: {
+                Authorization: "Bearer " + result.access_token,
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+        })
+            .then(res => res.json())
+            .then(res => res.id)
+
+        const tokenFound = await AccessToken.find({ userId })
+
+        if (!tokenFound) {
+            await AccessToken.insertOne({
+                token: result.access_token,
+                userId: userId.toString(),
+                subscriptions: [],
+            })
+        }
+
+        res.redirect("/?userId=" + userId)
+    })
+
+    app.use(express.static("public"))
+
+    app.get("/", function(req, res) {
+        res.sendFile(__dirname + "/views/index.html")
+    })
+
+    const port = process.env.PORT || 3000
+    createServer(app).listen(port, () =>
+        console.log(`Example app listening on port ${port}!`)
     )
 
-    if (!tokenFound) {
-        accessTokens.push({
-            token: result.access_token,
-            userId: userId.toString(),
-            subscriptions: [],
-        })
-    }
+    setInterval(fetchNotifications, 60 * 1000)
+}
 
-    res.redirect("/?userId=" + userId)
-})
-
-app.use(express.static("public"))
-
-app.get("/", function(req, res) {
-    res.sendFile(__dirname + "/views/index.html")
-})
-
-const port = process.env.PORT || 3000
-createServer(app).listen(port, () =>
-    console.log(`Example app listening on port ${port}!`)
-)
-
-setInterval(fetchNotifications, 60 * 1000)
+main()
