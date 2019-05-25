@@ -70,12 +70,12 @@ async function main() {
 
     app.post("/webPushSubscribe", async (req, res) => {
         const notificationSubscription = req.body
-        const accessTokenFound = await AccessToken.find({
+        const accessTokenFound = await AccessToken.findOne({
             userId: req.query.userId,
         })
 
         if (accessTokenFound) {
-            const subscriptionFound = accessTokenFound.subscriptions.find(
+            const subscriptionFound = accessTokenFound.subscriptions.findOne(
                 sub => sub.endpoint === notificationSubscription.endpoint
             )
 
@@ -120,7 +120,7 @@ async function main() {
             .then(res => res.json())
             .then(res => res.id)
 
-        const tokenFound = await AccessToken.find({ userId })
+        const tokenFound = await AccessToken.findOne({ userId })
 
         if (!tokenFound) {
             await AccessToken.insertOne({
