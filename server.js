@@ -49,6 +49,7 @@ const fetchNotifications = () =>
                     if (notification.unread) {
                         let content = notification.subject.title
                         console.log(content)
+                        console.log(accessToken.subscriptions)
 
                         accessToken.subscriptions.map(
                             notificationSubscription =>
@@ -122,9 +123,8 @@ app.get("/github-callback", async (req, res) => {
 
 app.use(express.static("public"))
 
-// http://expressjs.com/en/starter/basic-routing.html
-app.get("/", function(request, response) {
-    response.sendFile(__dirname + "/views/index.html")
+app.get("/", function(req, res) {
+    res.sendFile(__dirname + "/views/index.html")
 })
 
 const port = process.env.PORT || 3000
