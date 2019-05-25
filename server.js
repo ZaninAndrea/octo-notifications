@@ -75,7 +75,7 @@ async function main() {
         })
 
         if (accessTokenFound) {
-            const subscriptionFound = accessTokenFound.subscriptions.findOne(
+            const subscriptionFound = accessTokenFound.subscriptions.find(
                 sub => sub.endpoint === notificationSubscription.endpoint
             )
 
