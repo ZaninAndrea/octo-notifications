@@ -35,7 +35,7 @@ async function main() {
             fetch(
                 "https://api.github.com/notifications?since=" +
                     moment()
-                        .subtract(1, "minutes")
+                        .subtract(15, "minutes")
                         .toISOString(),
                 {
                     method: "GET",
