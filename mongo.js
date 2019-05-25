@@ -1,5 +1,6 @@
 const MongoClient = require("mongodb").MongoClient
 const uri = process.env.MONGO_URL
+console.log(uri)
 
 const client = new MongoClient(uri, { useNewUrlParser: true })
 
