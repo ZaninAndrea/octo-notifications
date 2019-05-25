@@ -33,7 +33,7 @@ const fetchNotifications = () =>
         fetch(
             "https://api.github.com/notifications?since=" +
                 moment()
-                    .subtract(1, "days")
+                    .subtract(1, "minutes")
                     .toISOString(),
             {
                 method: "GET",
@@ -48,8 +48,6 @@ const fetchNotifications = () =>
                 for (let notification of res) {
                     if (notification.unread) {
                         let content = notification.subject.title
-                        console.log(content)
-                        console.log(accessToken.subscriptions)
 
                         accessToken.subscriptions.map(
                             notificationSubscription =>
@@ -73,15 +71,10 @@ app.post("/webPushSubscribe", (req, res) => {
         token => token.userId === req.query.userId
     )
 
-    console.log(req.query.userId, accessTokens)
-
-    console.log(accessTokenFound)
     if (accessTokenFound) {
         const subscriptionFound = accessTokenFound.subscriptions.find(
             sub => sub.endpoint === notificationSubscription.endpoint
         )
-
-        console.log(subscriptionFound)
 
         if (!subscriptionFound) {
             accessTokenFound.subscriptions.push(notificationSubscription)
