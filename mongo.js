@@ -56,7 +56,7 @@ module.exports = new Promise((resolve, reject) => {
     client.connect(err => {
         if (err) return reject(err)
         const accessTokensCollection = client
-            .db("github-notifications")
+            .db("github_mongo")
             .collection("accessTokens")
 
         resolve({
