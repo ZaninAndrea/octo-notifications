@@ -118,7 +118,7 @@ app.get("/github-callback", async (req, res) => {
     if (!tokenFound) {
         accessTokens.push({
             token: result.access_token,
-            userId,
+            userId: userId.toString(),
             subscriptions: [],
         })
     }
