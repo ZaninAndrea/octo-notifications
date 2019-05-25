@@ -26,7 +26,6 @@ const app = express()
 app.use(cors())
 app.use(bodyParser.json())
 
-let subscriptions = {}
 const accessTokens = []
 
 const fetchNotifications = () =>
@@ -69,16 +68,17 @@ const fetchNotifications = () =>
 
 app.post("/webPushSubscribe", (req, res) => {
     const notificationSubscription = req.body
+    const accessTokenFound = accessTokens.find(
+        token => token.userId === req.query.userId
+    )
 
-    if (
-        Object.keys(subscriptions).indexOf(
-            notificationSubscription.endpoint
-        ) === -1
-    ) {
-        if (accessTokens[req.query.userId]) {
-            accessTokens[
-                req.query.userId
-            ].subscriptions = notificationSubscription
+    if (accessTokenFound) {
+        const subscriptionFound = accessTokenFound.subscriptions.find(
+            sub => sub.endpoint === notificationSubscription.endpoint
+        )
+
+        if (!subscriptionFound) {
+            accessTokenFound.subscriptions.push(notificationSubscription)
         }
 
         fetchNotifications()
@@ -94,9 +94,7 @@ app.get("/github-callback", async (req, res) => {
         }&client_secret=${process.env.CLIENT_SECRET}&code=${req.query.code}`,
         { headers: { Accept: "application/json" } }
     ).then(res => res.json())
-    accessTokens.push({
-        token: result.access_token,
-    })
+
     const userId = await fetch("https://api.github.com/user", {
         method: "GET",
         headers: {
@@ -106,6 +104,18 @@ app.get("/github-callback", async (req, res) => {
     })
         .then(res => res.json())
         .then(res => res.id)
+
+    const tokenFound = accessTokens.find(
+        accessToken => accessToken.userId === userId
+    )
+
+    if (!tokenFound) {
+        accessTokens.push({
+            token: result.access_token,
+            userId,
+            subscriptions: [],
+        })
+    }
 
     res.redirect("/?userId=" + userId)
 })
