@@ -14,9 +14,8 @@ async function main() {
 
     const vapidKeys = {
         subject: "mailto:hello@github-notifications.glitch.me",
-        publicKey:
-            "BGxFCMN557K54skPUp-JLqbMfbc5u_3uyB8Zx4-VgGN4c4XqixyQ1Pbh5lSfosXIMSo9V3OvQlWdKj1WlSF8W14",
-        privateKey: "6zA_8iUrNvO8mXHoSXnjXf1xPOzLOMznK_b8JvY6acY",
+        publicKey: process.env.VAPID_PUBLIC,
+        privateKey: process.env.VAPID_PRIVATE,
     }
 
     webpush.setVapidDetails(
