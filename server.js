@@ -4,7 +4,6 @@ const bodyParser = require("body-parser")
 const webpush = require("web-push")
 const http = require("http")
 const fetch = require("isomorphic-fetch")
-const btoa = require("btoa")
 const moment = require("moment")
 const Client = require("./mongo")
 
