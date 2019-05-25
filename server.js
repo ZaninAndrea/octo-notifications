@@ -73,10 +73,13 @@ app.post("/webPushSubscribe", (req, res) => {
         token => token.userId === req.query.userId
     )
 
+    console.log(accessTokenFound)
     if (accessTokenFound) {
         const subscriptionFound = accessTokenFound.subscriptions.find(
             sub => sub.endpoint === notificationSubscription.endpoint
         )
+
+        console.log(subscriptionFound)
 
         if (!subscriptionFound) {
             accessTokenFound.subscriptions.push(notificationSubscription)
