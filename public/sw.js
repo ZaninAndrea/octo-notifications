@@ -8,8 +8,8 @@ self.addEventListener("push", function(event) {
         body: pushData.content,
         actions: [{ title: "Mark as Read", action: "mark-as-read" }],
         icon: "https://dokku.ml/logo.png",
-        url: "https://www.github.com",
         data: {
+            url: "https://www.github.com",
             // url:pushData.url || "https://www.github.com"
             badge: "https://dokku.ml/logo.png",
             markAsReadToken: pushData.markAsReadToken,
@@ -22,14 +22,19 @@ self.addEventListener("push", function(event) {
 
 self.addEventListener(
     "notificationclick",
-    function(event) {
-        console.log(event.action)
-        var data = event.notification.data
+    async function(event) {
+        if (event.action === "mark-as-read") {
+            await fetch(
+                "https://dokku.ml/mark-as-read?token=" +
+                    event.notification.data.markAsReadToken
+            )
 
-        var found = false
-        clients.openWindow(data.url)
-
-        event.notification.close()
+            event.notification.close()
+        } else {
+            var data = event.notification.data
+            clients.openWindow(data.url)
+            event.notification.close()
+        }
     },
     false
 )

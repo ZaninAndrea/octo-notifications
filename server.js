@@ -52,7 +52,10 @@ async function main() {
                         if (notification.unread) {
                             let content = notification.subject.title
                             const markAsReadToken = jwt.sign(
-                                { foo: "bar" },
+                                {
+                                    id: notification.id,
+                                    userId: accessToken.userId,
+                                },
                                 process.env.SECRET
                             )
 
@@ -73,6 +76,28 @@ async function main() {
                 })
         )
     }
+
+    app.post("/mark-as-read", async (req, res) => {
+        try {
+            const { id, userId } = jwt.verify(
+                req.query.token,
+                process.env.SECRET
+            )
+            const accessTokenFound = await AccessToken.findOne({
+                userId,
+            })
+
+            // mark notification as read
+            await fetch("https://api.github.com/notifications/threads/" + id, {
+                method: "PATCH",
+                headers: {
+                    Authorization: "Bearer " + accessTokenFound.token,
+                },
+            })
+        } catch (e) {
+            res.send("Invalid token")
+        }
+    })
 
     app.post("/webPushSubscribe", async (req, res) => {
         const notificationSubscription = req.body
