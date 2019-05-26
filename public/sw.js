@@ -26,7 +26,8 @@ self.addEventListener(
         if (event.action === "mark-as-read") {
             await fetch(
                 "https://dokku.ml/mark-as-read?token=" +
-                    event.notification.data.markAsReadToken
+                    event.notification.data.markAsReadToken,
+                { method: "POST" }
             )
 
             event.notification.close()
