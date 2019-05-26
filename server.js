@@ -6,6 +6,7 @@ const http = require("http")
 const fetch = require("isomorphic-fetch")
 const moment = require("moment")
 const Client = require("./mongo")
+const jwt = require("jsonwebtoken")
 
 async function main() {
     const { AccessToken } = await Client
@@ -50,6 +51,10 @@ async function main() {
                     for (let notification of res) {
                         if (notification.unread) {
                             let content = notification.subject.title
+                            const markAsReadToken = jwt.sign(
+                                { foo: "bar" },
+                                process.env.SECRET
+                            )
 
                             accessToken.subscriptions.map(
                                 notificationSubscription =>
@@ -57,6 +62,7 @@ async function main() {
                                         notificationSubscription,
                                         JSON.stringify({
                                             content,
+                                            markAsReadToken,
                                             url: notification.subject.url,
                                             date: notification.updated_at,
                                         })

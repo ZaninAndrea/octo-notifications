@@ -6,12 +6,13 @@ self.addEventListener("push", function(event) {
     const title = pushData.content
     const options = {
         body: pushData.content,
+        actions: [{ title: "Mark as Read", action: "mark-as-read" }],
+        icon: "https://dokku.ml/logo.png",
+        url: "https://www.github.com",
         data: {
             // url:pushData.url || "https://www.github.com"
-            url: "https://www.github.com",
             badge: "https://dokku.ml/logo.png",
-            // actions: [{ title: "Mark as Read", action: "mark-as-read" }],
-            icon: "https://dokku.ml/logo.png",
+            markAsReadToken: pushData.markAsReadToken,
         },
     }
 
