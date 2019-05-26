@@ -8,6 +8,22 @@ const moment = require("moment")
 const Client = require("./mongo")
 const jwt = require("jsonwebtoken")
 
+async function fetchUserUrl(url, token) {
+    try {
+        const res = await fetch(url, {
+            method: "GET",
+            headers: {
+                Authorization: "Bearer " + token,
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+        }).then(res => res.json())
+
+        return res.html_url
+    } catch (e) {
+        return "https://github.com"
+    }
+}
+
 async function main() {
     const { AccessToken } = await Client
 
@@ -47,10 +63,15 @@ async function main() {
                 }
             )
                 .then(res => res.json())
-                .then(res => {
+                .then(async res => {
                     for (let notification of res) {
                         if (notification.unread) {
                             let content = notification.subject.title
+
+                            const url = await fetchUserUrl(
+                                notification.subject.url,
+                                accessToken.token
+                            )
                             const markAsReadToken = jwt.sign(
                                 {
                                     id: notification.id,
@@ -66,7 +87,7 @@ async function main() {
                                         JSON.stringify({
                                             content,
                                             markAsReadToken,
-                                            url: notification.subject.url,
+                                            url,
                                             date: notification.updated_at,
                                         })
                                     )

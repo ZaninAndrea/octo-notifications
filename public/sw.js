@@ -9,8 +9,7 @@ self.addEventListener("push", function(event) {
         actions: [{ title: "Mark as Read", action: "mark-as-read" }],
         icon: "https://dokku.ml/logo.png",
         data: {
-            url: "https://www.github.com",
-            // url:pushData.url || "https://www.github.com"
+            url: pushData.url,
             badge: "https://dokku.ml/logo.png",
             markAsReadToken: pushData.markAsReadToken,
         },
