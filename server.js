@@ -94,6 +94,8 @@ async function main() {
                     Authorization: "Bearer " + accessTokenFound.token,
                 },
             })
+
+            res.send("Ok")
         } catch (e) {
             res.send("Invalid token")
         }
