@@ -4,7 +4,13 @@ A GitHub App that sends you GitHub notifications via Push Notifications.
 
 ## Using
 
-Just head over to [dokku.ml](https://dokku.ml) and sign in with GitHub
+Just head over to [dokku.ml](https://dokku.ml) and sign in with GitHub.
+
+Features:
+
+-   real time push notifications
+-   mark as read from notification
+-   click to go to relevant github page
 
 ## Deploying
 

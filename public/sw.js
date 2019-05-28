@@ -1,16 +1,19 @@
 self.addEventListener("push", function(event) {
-    console.log("[Service Worker] Push Received.")
-    console.log(`[Service Worker] Push had this data: "${event.data.text()}"`)
-
     const pushData = JSON.parse(event.data.text())
     const title = pushData.content
     const options = {
         body: pushData.content,
-        actions: [{ title: "Mark as Read", action: "mark-as-read" }],
+        actions: [
+            {
+                title: "Mark as Read",
+                action: "mark-as-read",
+                icon: "/mark-as-read.png",
+            },
+        ],
         icon: "https://dokku.ml/logo.png",
+        badge: "https://dokku.ml/badge.png",
         data: {
             url: pushData.url,
-            badge: "https://dokku.ml/logo.png",
             markAsReadToken: pushData.markAsReadToken,
         },
     }

@@ -51,3 +51,25 @@ body {
     color: #23272b;
     margin: 0;
 }
+
+#paypal-icon {
+    vertical-align: middle;
+    height: 3rem;
+    width: 3rem;
+}
+
+#support-me {
+    color: white;
+    background: #23272b;
+    font-family: proxima-nova, "Proxima Nova", sans-serif;
+    font-size: 2rem;
+    padding: 1rem;
+    text-decoration: none !important;
+    border-radius: 1rem;
+    display: inline-block;
+}
+
+#support-me a {
+    text-decoration: none;
+    color: unset;
+}
