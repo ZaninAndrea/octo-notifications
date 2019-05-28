@@ -10,7 +10,7 @@ self.addEventListener("push", function(event) {
                 icon: "/mark-as-read.png",
             },
         ],
-        icon: "https://dokku.ml/logo.png",
+        icon: pushData.icon,
         badge: "https://dokku.ml/badge.png",
         data: {
             url: pushData.url,

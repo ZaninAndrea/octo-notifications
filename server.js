@@ -8,7 +8,7 @@ const moment = require("moment")
 const Client = require("./mongo")
 const jwt = require("jsonwebtoken")
 
-async function fetchUserUrl(url, token) {
+async function fetchUserUrl(url, type, token) {
     try {
         const res = await fetch(url, {
             method: "GET",
@@ -18,9 +18,19 @@ async function fetchUserUrl(url, token) {
             },
         }).then(res => res.json())
 
-        return res.html_url
+        const icon =
+            type === "Issue" && res.state === "open"
+                ? "https://dokku.ml/issue-opened.png"
+                : type === "Issue" && res.state === "closed"
+                ? "https://dokku.ml/issue-closed.png"
+                : "https://dokku.ml/logo.png"
+
+        return { url: res.html_url, icon }
     } catch (e) {
-        return "https://github.com"
+        return {
+            url: "https://github.com",
+            icon: "https://dokku.ml/logo.png",
+        }
     }
 }
 
@@ -67,9 +77,11 @@ async function main() {
                     for (let notification of res) {
                         if (notification.unread) {
                             let content = notification.subject.title
+                            console.log(notification.subject.type)
 
-                            const url = await fetchUserUrl(
+                            const { url, icon } = await fetchUserUrl(
                                 notification.subject.url,
+                                notification.subject.type,
                                 accessToken.token
                             )
                             const markAsReadToken = jwt.sign(
@@ -87,6 +99,7 @@ async function main() {
                                         JSON.stringify({
                                             content,
                                             markAsReadToken,
+                                            icon,
                                             url,
                                             date: notification.updated_at,
                                         })
