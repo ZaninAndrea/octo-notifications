@@ -74,6 +74,7 @@ async function main() {
             )
                 .then(res => res.json())
                 .then(async res => {
+                    console.log(res)
                     for (let notification of res) {
                         if (notification.unread) {
                             let content = notification.subject.title
