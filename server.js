@@ -74,7 +74,9 @@ async function main() {
             )
                 .then(res => res.json())
                 .then(async res => {
-                    console.log(res)
+                    // skip empty arrays or errors
+                    if (!res.length) return
+
                     for (let notification of res) {
                         if (notification.unread) {
                             let content = notification.subject.title
