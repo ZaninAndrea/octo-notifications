@@ -23,6 +23,10 @@ async function fetchUserUrl(url, type, token) {
                 ? "https://dokku.ml/issue-opened.png"
                 : type === "Issue" && res.state === "closed"
                 ? "https://dokku.ml/issue-closed.png"
+                : type === "PullRequest" && res.state === "open"
+                ? "https://dokku.ml/git-pull-request.png"
+                : type === "Issue" && res.state === "closed"
+                ? "https://dokku.ml/git-merge.png"
                 : "https://dokku.ml/logo.png"
 
         return { url: res.html_url, icon }
