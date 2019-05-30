@@ -1,5 +1,7 @@
 # Octo-Notifications
 
+[![forthebadge](https://forthebadge.com/images/badges/60-percent-of-the-time-works-every-time.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/its-not-a-lie-if-you-believe-it.svg)](https://forthebadge.com)
+
 A GitHub App that sends you GitHub notifications via Push Notifications.
 
 ## Using
