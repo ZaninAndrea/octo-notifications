@@ -84,7 +84,6 @@ async function main() {
                     for (let notification of res) {
                         if (notification.unread) {
                             let content = notification.subject.title
-                            console.log(notification.subject.type)
 
                             const { url, icon } = await fetchUserUrl(
                                 notification.subject.url,
@@ -99,18 +98,22 @@ async function main() {
                                 process.env.SECRET
                             )
 
+                            console.log(accessToken.subscriptions)
+
                             accessToken.subscriptions.map(
                                 notificationSubscription =>
-                                    webpush.sendNotification(
-                                        notificationSubscription,
-                                        JSON.stringify({
-                                            content,
-                                            markAsReadToken,
-                                            icon,
-                                            url,
-                                            date: notification.updated_at,
-                                        })
-                                    )
+                                    webpush
+                                        .sendNotification(
+                                            notificationSubscription,
+                                            JSON.stringify({
+                                                content,
+                                                markAsReadToken,
+                                                icon,
+                                                url,
+                                                date: notification.updated_at,
+                                            })
+                                        )
+                                        .catch(console.log)
                             )
                         }
                     }
@@ -194,7 +197,9 @@ async function main() {
             .then(res => res.json())
             .then(res => res.id)
 
-        const tokenFound = await AccessToken.findOne({ userId })
+        const tokenFound = await AccessToken.findOne({
+            userId: userId.toString(),
+        })
 
         if (!tokenFound) {
             await AccessToken.insertOne({
